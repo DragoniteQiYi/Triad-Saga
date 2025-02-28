@@ -1,0 +1,4 @@
+repository "Triad Saga@dragoniteqiyi@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"

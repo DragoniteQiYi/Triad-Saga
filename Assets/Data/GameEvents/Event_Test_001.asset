@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e4bffeef172b9647a06e3c3de5452ef, type: 3}
+  m_Name: Event_Test_001
+  m_EditorClassIdentifier: 
+  EventID: Event_Test_001
+  EventName: IsTestSucceeded
+  EventDescription: "\u8FD9\u53EA\u662F\u4E00\u4E2A\u6D4B\u8BD5\u503C\uFF0C\u5982\u679C\u503C\u662Ftrue\uFF0C\u8BF4\u660E\u6CA1\u6709\u4EC0\u4E48\u95EE\u9898"
+  EventType: 3
