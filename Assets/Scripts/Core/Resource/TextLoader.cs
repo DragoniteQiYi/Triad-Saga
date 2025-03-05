@@ -50,7 +50,7 @@ public class TextLoader : ResourceLoader
         {
             await Task.Run(() =>
             {
-                string[] lines = ReadAllLines(path);
+                string[] lines = CSVLocalizationHelper.ReadAllLines(path);
                 Dictionary<int, string> columnMap = new();
                 int index = 0;
 
@@ -70,10 +70,11 @@ public class TextLoader : ResourceLoader
                         {
                             columnMap.Add(i, parts[i].Trim('"'));
                         }
+                        index++;
                         continue;
                     }
 
-                    // 根据类型读取相应资源
+                    // TODO: 根据类型读取相应资源
                     Dialogue dialogue = new();
                     for (int i = 0; i < parts.Length; i++)
                     {
@@ -104,22 +105,6 @@ public class TextLoader : ResourceLoader
         return null;
     }
 
-    private string[] ReadAllLines(string path)
-    {
-        using (StreamReader reader = new(path))
-        {
-            var lines = new List<string>();
-
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                lines.Add(line);
-            }
-
-            return lines.ToArray();
-        }
-    }
-
     private string ParseDialogueKey(string key)
     {
         // 将所有的 "_" 替换为 "/"
@@ -131,8 +116,24 @@ public class TextLoader : ResourceLoader
         return result;
     }
     
+    /// <summary>
+    /// 用于读取用语、术语、名词类文本的本地化翻译
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
     private string LoadText(string key)
     {
-        return "";
+        string type = key[..key.IndexOf('_')];
+        string target = key[(key.IndexOf("_") + 1)..];
+        
+        if (!textResourceMap.ContainsKey(type))
+        {
+            Debug.LogError("未知资源类型：" + type);
+            return null;
+        }
+        string path = textResourceMap[type];
+
+        return CSVLocalizationHelper.ReadSingleLine(path, key, 
+            LocalizationManager.Instance.GetCurrentLanguage());
     }
 }

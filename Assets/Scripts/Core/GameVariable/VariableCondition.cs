@@ -31,7 +31,7 @@ public class VariableCondition
     }
 
     /// <summary>
-    /// 用于转换事件变量的值，便于比较
+    /// 用于转换游戏变量的值，便于比较
     /// </summary>
     /// <param name="type"></param>
     /// <param name="value"></param>

@@ -33,7 +33,7 @@ public class GlobalVariableManager : MonoBehaviour
 
 #if UNITY_EDITOR
     [ContextMenu("自动收集所有变量")]
-    private void CollectAllEvents()
+    private void CollectAllVariables()
     {
         _varList.Clear();
         string[] guids = AssetDatabase.FindAssets("t:GameVariable");
@@ -59,32 +59,70 @@ public class GlobalVariableManager : MonoBehaviour
         }
     }
 
-    public object GetVarValue(string eventName)
+    public object GetVarValue(string varKey)
     {
-        if (!_varDictionary.ContainsKey(eventName))
+        if (!VarExists(varKey))
         {
-            Debug.LogError($"未知事件变量：{eventName}");
+            Debug.LogError($"未知游戏变量：{varKey}");
             return null;
         }
-        return _varDictionary[eventName].Value;
+        return _varDictionary[varKey].Value;
     }
 
-    public void SetVarValue(string eventName, object value)
+    public void SetVarValue(string varKey, object value)
     {
-        if (!_varDictionary.TryGetValue(eventName, out GameVariable e))
+        if (!_varDictionary.TryGetValue(varKey, out GameVariable e))
         {
-            Debug.LogError($"{eventName}: 事件变量不存在");
-        }
-        if (CheckTypeMatch(e.Type, value))
-        {
-            e.Value = value;
+            Debug.LogError($"{varKey}: 游戏变量不存在");
             return;
         }
-        Debug.LogError("事件变量的类型与所给值不匹配");
+        if (!CheckTypeMatch(e.Type, value))
+        {
+            // 处理int到float的转换
+            if (e.Type == VariableType.Float && value is int intVal)
+                e.Value = (float)intVal;
+            else
+                e.Value = value;
+            OnValueChanged?.Invoke(e);
+            return;
+        }
+        Debug.LogError("游戏变量的类型与所给值不匹配");
+    }
+
+    public void AddValue(string varKey, object value)
+    {
+        if (!_varDictionary.TryGetValue(varKey, out GameVariable e))
+        {
+            Debug.LogError($"{varKey}: 游戏变量不存在");
+            return;
+        }
+        if (!CheckTypeMatch(e.Type, value))
+        {
+            Debug.LogError("游戏变量的类型与所给值不匹配");
+            return;
+        }
+        // 根据类型进行加法操作
+        switch (e.Type)
+        {
+            case VariableType.Int:
+                e.Value = (int)e.Value + (int)value;
+                break;
+            case VariableType.Float:
+                e.Value = (float)e.Value + Convert.ToSingle(value);
+                break;
+            default:
+                Debug.LogError("该类型不支持加法操作");
+                break;
+        }
+        OnValueChanged?.Invoke(e); // 触发事件
     }
 
     private bool CheckTypeMatch(VariableType type, object value)
     {
+        if (type == VariableType.Float && value is int)
+        {
+            return true; // 允许int转为float
+        }
         return type switch
         {
             VariableType.Int => value is int,
@@ -93,5 +131,10 @@ public class GlobalVariableManager : MonoBehaviour
             VariableType.String => value is string,
             _ => false
         };
+    }
+
+    private bool VarExists(string varName)
+    {
+        return _varDictionary.ContainsKey(varName);
     }
 }

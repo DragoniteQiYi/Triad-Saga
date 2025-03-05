@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Variable", menuName = "自定义对象/游戏变量", order = 0)]
+[CreateAssetMenu(fileName = "New Variable", menuName = "游戏/游戏变量", order = 0)]
 public class GameVariable : ScriptableObject
 {
     public string Key;
